@@ -5,18 +5,43 @@ session_start();
 
 include ("connect.php");
 
+if ($_POST['emails']){
+  //getting login inputs
+  $email = $_POST['emails'];
+  $password = md5($_POST['passwords']);
+  //sql query for user 
+  $user_sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+  //running user sql query
+  $result = mysqli_query($conn, $user_sql);
+  $rows = mysqli_fetch_assoc($result);
 
-//getting login inputs
-$email = $_POST['emails'];
-$password = md5($_POST['passwords']);
+  //checking if user details are right
+  if ($result->num_rows > 0){
+    $_SESSION['user'] = true;
+  }else {
+    
+    $_SESSION['user'] = false;
+    $_SESSION['login_error'] = true;
+    header ("Location: login.php");
+  }
+
+  //seperating user types
+  if ($rows['librarian']  == 1){
+    $_SESSION['user_admin'] = true;
+  }else {
+    $_SESSION['user_admin'] = false;
+  }
+
+}
 
 
-//sql query for user 
-$user_sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
 
 
-//running user sql query
-$result = mysqli_query($conn, $user_sql);
+
+
+
+
+
 
 //sql query for books table 
 $books_sql = "";
@@ -41,23 +66,14 @@ if ($sort == "relevance"){
 //running book sql query 
 $books_result =  mysqli_query($conn, $books_sql);
 
-$_SESSION['login_error'] = false;
 
-if ($result->num_rows > 0  || $_SESSION['user'] == true) {
+
+
+
+if ($_SESSION['user'] == true) {
   
-  $rows = mysqli_fetch_assoc($result);
-  $_SESSION['user'] = true;
+  
   $_SESSION['login_error'] = false;
-  //seperating user types
-  if (!$_GET){
-    if ($rows['librarian']  == 1){
-      // echo "You are a librarian";
-      $_SESSION['user_type'] = "admin";
-    }else {
-      // echo "You are a member";
-      $_SESSION['user_type'] = "member";
-    }
-  }
 
 
 ?>
@@ -92,18 +108,20 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
 <body class='mx-5'>
 
   <h1 class='jumbotron text-center m-5 fs-1'>Library</h1>
+  <!-- navbar -->
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
 
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page">Library</a>
-
+          <a class="nav-link active" aria-current="page" href="index.php">Library</a>
           <?php
-          if ($_SESSION['user_type'] == "admin"){ ?>
-              <a class="nav-link" href="add_books.php">Add Book</a>
+            if ($_SESSION['user_admin'] == true){ ?>
+            <a class="nav-link" href="add_books.php">Add Book</a>
               <a class="nav-link" href="add_author.php">Add Author</a>
-          <?php } ?>
+          <?php
+            }
+          ?>
         </div>
       </div>
       <form class="d-flex" role="search" action="search.php" method="post">
@@ -115,6 +133,7 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
   <br>
 
   <?php
+  //error/success handling
   if ($_SESSION['add_author'] == true){
     echo "<div class='alert alert-success' role='alert'>
 					New author succesfully added!
@@ -125,8 +144,15 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
 					New book succesfully added!
 				  </div>";
 				  $_SESSION['add_book'] = false;
+  }else if ($_SESSION['author_error'] == true){
+    echo "<div class='alert alert-danger' role='alert'>
+					Book not added. Author could not be found.
+				  </div>";
+				  $_SESSION['author_error'] = false;
   }
   ?>
+
+  <!-- filter form -->
   <main style="display: flex;">
     <aside style="width: 17%;" class="mb-4 p-3">
       <form action="index.php" method="get">
@@ -151,7 +177,7 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
     <?php
 
 
-  
+    //displaying all the books
     echo "<div style='width: 83%;'><table class='table table-light mb-4'><tr>
     <th>Author</th>
     <th>Book Name</th>
@@ -160,20 +186,15 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
     <th>Recommended Age</th>
     </tr>";
     while($row = mysqli_fetch_array($books_result)){
-        echo "<tr><td>" . $row['author_name'] . "</td>
-        <td>" . $row['book_name'] . "</td>
+        echo "<tr><td>" . ucwords($row['author_name']) . "</td>
+        <td>" . ucwords($row['book_name']) . "</td>
         <td>" . $row['book_year'] . "</td>
-        <td>" . $row['book_genre'] . "</td>
+        <td>" . ucwords($row['book_genre']) . "</td>
         <td>" . $row['age_group'] . "</td></tr>";
     }
     echo "</table> </div>";
 
-  } else {
-    // echo "Your username or password is incorrect!";
-    $_SESSION['user'] = false;
-    $_SESSION['login_error'] = true;
-    header ("Location: login.php");
-  }
+}
 
   ?>
   </main>

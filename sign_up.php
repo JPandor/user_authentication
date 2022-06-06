@@ -51,13 +51,6 @@
                         <span class="focus-input100" data-symbol="&#xf190;"></span>
                     </div>
 
-                    <!-- <div class="wrap-input100">
-                        <p class="label-input100 p-b-18">Please select a user type:</p>
-                        <input type="radio" id="member" name="user-role" value="HTML">
-                        <label for="member">Member</label>
-                        <input type="radio" id="librarian" name="user-role" value="CSS">
-                        <label for="librarian" class="p-b-31">Librarian</label><br>
-                    </div> -->
 
                     <div class="wrap-input100 p-t-15 p-b-15">
                         <label class="label-input100" for="user-role">Please select a user type:</label><br>

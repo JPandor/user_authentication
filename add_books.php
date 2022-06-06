@@ -2,15 +2,17 @@
 
 session_start();
 
-if ($_SESSION['user'] == false || $_SESSION['user_type'] == "member")
+include ("connect.php");
+
+//restricting access for users that are members or not logged in
+if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
 {
 	$_SESSION['add'] = true;
     header("Location: login.php");
     die();
 }
 
-include ("connect.php");
-
+// adding book 
 if ($_POST['book_name']){
     
     $book = $_POST['book_name'];
@@ -43,10 +45,11 @@ if ($_POST['book_name']){
 		}
 	  
     }else if ($author_result->num_rows == 0){
-		echo "<div class='alert alert-danger' role='alert'>
-		Author not found!
-	   </div>";
-
+	// 	echo "<div class='alert alert-danger' role='alert'>
+	// 	Author not found!
+	//    </div>";
+		$_SESSION['author_error'] = true;
+		header ("Location: index.php");
 	}else{
 		echo "Something went wrong :(";
 	}

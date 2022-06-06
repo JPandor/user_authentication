@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if ($_SESSION['user'] == false || $_SESSION['user_type'] == "member")
+if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
 {
 	$_SESSION['add'] = true;
     header("Location: login.php");

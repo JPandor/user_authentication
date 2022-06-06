@@ -1,7 +1,9 @@
 <?php
 
+	session_start();
 	include ("connect.php");
 
+	//updating user password
 	if($_POST['password']){
 		$email = $_POST['emails'];
 		$password = md5($_POST['password']);
@@ -9,9 +11,12 @@
 		$sql = "UPDATE users SET password = '$password' WHERE email = '$email'";
 
 		if ($conn->query($sql) === TRUE) {
-			header('Refresh:5; url=login.php');
-			echo 'Password succesfully changed!';
-    		echo 'This page will be automatically redirected to login page';
+			// header ('Refresh:5; url=login.php');
+			// echo 'Password succesfully changed!';
+    		// echo 'This page will be automatically redirected to login page';
+			$_SESSION['change_password'] = true;
+			// echo $_SESSION['change_password'];
+			header('Location: login.php');
 			
 		} else {
 			echo "Error: " . $sql . "<br>" . $conn->error;
