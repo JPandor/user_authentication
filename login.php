@@ -53,7 +53,7 @@ $_SESSION['user'] = false;
 
 			<?php
 
-				//message/error handling
+				// success/error message handling
 				if ($_SESSION['login_error'] == true){
 					echo "<div class='alert alert-danger' role='alert'>
 					Email or Password is incorrect!
@@ -61,7 +61,7 @@ $_SESSION['user'] = false;
 				  $_SESSION['login_error'] = false;
 				}else if ($_SESSION['new_user'] == true){
 					echo "<div class='alert alert-success' role='alert'>
-					New user succesfully created! Please login.
+					New user successfully created! Please login.
 				  </div>";
 				  $_SESSION['new_user'] = false;
 				}else if ($_SESSION['add'] == true){
@@ -78,7 +78,7 @@ $_SESSION['user'] = false;
 
 			?>
 
-					<div class="wrap-input100 validate-input m-b-23" data-validate="Email is reauired">
+					<div class="wrap-input100 validate-input m-b-23" data-validate="Email is required">
 						<span class="label-input100">Email</span>
 						<input class="input100" type="text" name="emails" placeholder="Type your email">
 						<span class="focus-input100" data-symbol="&#xf206;"></span>
@@ -107,7 +107,7 @@ $_SESSION['user'] = false;
 
 
 
-					<div class="flex-col-c p-t-155">
+					<div class="flex-col-c p-t-50">
 						<span class="txt1 p-b-17">
 							Don't have an account?
 						</span>

@@ -49,7 +49,7 @@ if ($_POST['book_name']){
 	// 	Author not found!
 	//    </div>";
 		$_SESSION['author_error'] = true;
-		header ("Location: index.php");
+		header ("Location: add_author.php");
 	}else{
 		echo "Something went wrong :(";
 	}
@@ -109,25 +109,25 @@ if ($_POST['book_name']){
 					<div class="wrap-input100 validate-input m-b-23" data-validate="Release year is required">
 						<span class="label-input100">Release year</span>
 						<input class="input100" type="number" name="release_year" placeholder="Type the books release year">
-						<span class="focus-input100" data-symbol="&#xf190;"></span>
+						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 					
                     <div class="wrap-input100 validate-input m-b-23" data-validate="Genre is required">
 						<span class="label-input100">Genre</span>
 						<input class="input100" type="text" name="genre" placeholder="Type book genre">
-						<span class="focus-input100" data-symbol="&#xf190;"></span>
+						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 
                     <div class="wrap-input100 validate-input m-b-23" data-validate="Recommended Age is required">
 						<span class="label-input100">Recommended age</span>
 						<input class="input100" type="text" name="age_group" placeholder="Type the recommended age">
-						<span class="focus-input100" data-symbol="&#xf190;"></span>
+						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 
                     <div class="wrap-input100 validate-input m-b-23" data-validate="Author is required. Please make sure author is already added to the database.">
 						<span class="label-input100">Author</span>
 						<input class="input100" type="text" name="author" placeholder="Type author's name">
-						<span class="focus-input100" data-symbol="&#xf190;"></span>
+						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 					
 					<div class="container-login100-form-btn">
@@ -139,7 +139,12 @@ if ($_POST['book_name']){
 						</div>
 					</div>
 
-	
+					<div class="flex-col-c p-t-30">
+
+						<a href="index.php" class="txt2">
+							Back to home?
+						</a>
+					</div>
 				</form>
 			</div>
 		</div>

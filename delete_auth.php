@@ -1,8 +1,41 @@
+<?php
+
+session_start();
+include ("connect.php");
+
+
+if (isset ($_POST['author'])){
+    $author = $_POST['author'];
+
+    $sql = "SELECT * FROM authors WHERE author_name = '$author'";
+
+    $result = mysqli_query($conn, $sql);
+
+    if ($result->num_rows > 0){
+        $delete_sql = "DELETE FROM authors WHERE author_name = '$author'";
+
+        if ($conn->query($delete_sql) === TRUE){
+            $_SESSION['delete_auth'] = true;
+            header ("Location: index.php");
+        }else {
+            $_SESSION['delete_author_error'] = true;
+            header ("Location: delete_book.php");
+        }
+    }else {
+        $_SESSION['delete_auth_error'] = true;
+    }
+}
+
+
+    
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <title>Sign Up</title>
+    <title>Login</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--===============================================================================================-->
@@ -27,6 +60,9 @@
     <link rel="stylesheet" type="text/css" href="css/util.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!--===============================================================================================-->
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 
 <body>
@@ -34,56 +70,41 @@
     <div class="limiter">
         <div class="container-login100" style="background-image: url('images/bg-01.jpg');">
             <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-                <form class="login100-form validate-form" action="register.php" method="post">
+                <form class="login100-form validate-form" action="delete_auth.php" method="post">
                     <span class="login100-form-title p-b-49">
-                        Sign Up
+                        Delete Author
                     </span>
 
-                    <div class="wrap-input100 validate-input m-b-23" data-validate="Email is required">
-                        <span class="label-input100">Email</span>
-                        <input class="input100" type="text" name="email" placeholder="Type your email">
+                    <?php
+                    if ($_SESSION['delete_auth_error'] == true){
+                        echo "<div class='alert alert-danger' role='alert'>
+                        Author was not found.
+                        </div>";
+                        $_SESSION['delete_auth_error'] = false;
+                    }
+                    ?>
+                    <div class="wrap-input100 validate-input m-b-23" data-validate="Author name is required">
+                        <span class="label-input100">Author</span>
+                        <input class="input100" type="text" name="author" placeholder="Type author to delete">
                         <span class="focus-input100" data-symbol="&#xf206;"></span>
                     </div>
 
-                    <div class="wrap-input100 validate-input  m-b-23" data-validate="Password is required">
-                        <span class="label-input100">Password</span>
-                        <input class="input100" type="password" name="password" placeholder="Type your password">
-                        <span class="focus-input100" data-symbol="&#xf190;"></span>
-                    </div>
-
-                    <div class="wrap-input100 validate-input" data-validate="Security question is required">
-                        <span class="label-input100">What is your favourite colour?</span>
-                        <input class="input100" type="text" name="security" placeholder="Type your favourite colour">
-                        <span class="focus-input100" data-symbol="&#xf190;"></span>
-                    </div>
-
-
-                    <div class="wrap-input100 p-t-15 p-b-15">
-                        <label class="label-input100" for="user-role">Please select a user type:</label><br>
-                        <select class="select" name="user-role" id="user-role">
-                            <option class="input100 option" value="librarian">Librarian</option>
-                            <option class="input100" value="member">Member</option>
-                        </select>
-                    </div>
-
-                    <div class="container-login100-form-btn p-t-31">
+                    <div class="container-login100-form-btn">
                         <div class="wrap-login100-form-btn">
                             <div class="login100-form-bgbtn"></div>
                             <button class="login100-form-btn" type="submit">
-                                Sign Up
+                                Delete Author
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex-col-c p-t-50">
-						<span class="txt1 p-b-17">
-							Already a member?
-						</span>
+                    <div class="flex-col-c p-t-30">
 
-						<a href="login.php" class="txt2">
-							Login
+						<a href="index.php" class="txt2">
+							Back to home?
 						</a>
 					</div>
+
                 </form>
             </div>
         </div>
@@ -108,6 +129,10 @@
     <script src="vendor/countdowntime/countdowntime.js"></script>
     <!--===============================================================================================-->
     <script src="js/main.js"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
 
 </body>
 

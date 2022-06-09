@@ -11,9 +11,10 @@ if ($_POST['emails']){
   $password = md5($_POST['passwords']);
   //sql query for user 
   $user_sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+  $_SESSION['email'] = $email;
   //running user sql query
   $result = mysqli_query($conn, $user_sql);
-  $rows = mysqli_fetch_assoc($result);
+  $users = mysqli_fetch_assoc($result);
 
   //checking if user details are right
   if ($result->num_rows > 0){
@@ -26,21 +27,13 @@ if ($_POST['emails']){
   }
 
   //seperating user types
-  if ($rows['librarian']  == 1){
+  if ($users['librarian']  == 1){
     $_SESSION['user_admin'] = true;
   }else {
     $_SESSION['user_admin'] = false;
   }
 
 }
-
-
-
-
-
-
-
-
 
 
 //sql query for books table 
@@ -67,9 +60,6 @@ if ($sort == "relevance"){
 $books_result =  mysqli_query($conn, $books_sql);
 
 
-
-
-
 if ($_SESSION['user'] == true) {
   
   
@@ -89,7 +79,7 @@ if ($_SESSION['user'] == true) {
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-  <!-- <link href="css/index.css" rel="stylehseet" type="text/css"> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
   <title>Library</title>
   <style>
     body {
@@ -100,29 +90,45 @@ if ($_SESSION['user'] == true) {
 
     aside {
       background-color: white;
+      margin-right: 1%;
+    }
 
+    h1 {
+      font-size: 70px !important;
     }
   </style>
 </head>
 
 <body class='mx-5'>
 
-  <h1 class='jumbotron text-center m-5 fs-1'>Library</h1>
+  <h1 class='jumbotron text-center m-5'>Library</h1>
   <!-- navbar -->
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
 
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="index.php">Library</a>
+          <a class="nav-link active" aria-current="page" href="index.php">Home</a>
           <?php
             if ($_SESSION['user_admin'] == true){ ?>
-            <a class="nav-link" href="add_books.php">Add Book</a>
-              <a class="nav-link" href="add_author.php">Add Author</a>
+          <a class="nav-link link-dark" href="add_books.php">Add Book</a>
+          <a class="nav-link link-dark" href="add_author.php">Add Author</a>
+          <a class="nav-link link-dark" href="delete_book.php">Delete Book</a>
+          <a class="nav-link link-dark" href="delete_auth.php">Delete Author</a>
           <?php
             }
           ?>
         </div>
+      </div>
+      <div class="nav-item dropdown  mx-4">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="login.php">Logout</a></li>
+          <li><a class="dropdown-item" href="delete.php">Delete Account</a></li>
+        </ul>
       </div>
       <form class="d-flex" role="search" action="search.php" method="post">
         <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">
@@ -136,25 +142,30 @@ if ($_SESSION['user'] == true) {
   //error/success handling
   if ($_SESSION['add_author'] == true){
     echo "<div class='alert alert-success' role='alert'>
-					New author succesfully added!
+					New author successfully added!
 				  </div>";
 				  $_SESSION['add_author'] = false;
   }else if ($_SESSION['add_book'] == true){
     echo "<div class='alert alert-success' role='alert'>
-					New book succesfully added!
+					New book successfully added!
 				  </div>";
 				  $_SESSION['add_book'] = false;
-  }else if ($_SESSION['author_error'] == true){
-    echo "<div class='alert alert-danger' role='alert'>
-					Book not added. Author could not be found.
+  }else if ($_SESSION['delete_auth'] == true){
+    echo "<div class='alert alert-success' role='alert'>
+					Author successfully deleted.
 				  </div>";
-				  $_SESSION['author_error'] = false;
+				  $_SESSION['delete_auth'] = false;
+  }else if ($_SESSION['delete_book'] == true){
+    echo "<div class='alert alert-success' role='alert'>
+					Book successfully deleted.
+				  </div>";
+				  $_SESSION['delete_book'] = false;
   }
   ?>
 
   <!-- filter form -->
   <main style="display: flex;">
-    <aside style="width: 17%;" class="mb-4 p-3">
+    <aside style="width: 16%;" class="mb-4 p-3">
       <form action="index.php" method="get">
         <h2>Sort By</h2>
         <input type="radio" name="sort" id="relevance" value="relevance">

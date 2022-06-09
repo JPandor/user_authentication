@@ -1,27 +1,6 @@
 <?php
 
-	session_start();
-	include ("connect.php");
-
-	//updating user password
-	if($_POST['password']){
-		$email = $_POST['emails'];
-		$password = md5($_POST['password']);
-
-		$sql = "UPDATE users SET password = '$password' WHERE email = '$email'";
-
-		if ($conn->query($sql) === TRUE) {
-			// header ('Refresh:5; url=login.php');
-			// echo 'Password succesfully changed!';
-    		// echo 'This page will be automatically redirected to login page';
-			$_SESSION['change_password'] = true;
-			// echo $_SESSION['change_password'];
-			header('Location: login.php');
-			
-		} else {
-			echo "Error: " . $sql . "<br>" . $conn->error;
-		}
-	}else {
+session_start();
 
 ?>
 
@@ -53,16 +32,30 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
+<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 <body>
 	
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<form class="login100-form validate-form" action="forgot.php" method="post">
+				<form class="login100-form validate-form" action="change_pw.php" method="post">
 					<span class="login100-form-title p-b-49">
 						Forgot Password
 					</span>
+
+					<?php
+
+				// success/error message handling
+				if ($_SESSION['forget_error'] == true){
+					echo "<div class='alert alert-danger' role='alert'>
+					Security question is wrong.
+				  </div>";
+				  $_SESSION['forget_error'] = false;
+				}
+				?>
 
 					<div class="wrap-input100 validate-input m-b-23" data-validate = "Email is required">
 						<span class="label-input100">Email</span>
@@ -70,10 +63,16 @@
 						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 
+					<div class="wrap-input100 validate-input m-b-23" data-validate="Security question is required">
+                        <span class="label-input100">What is your favourite colour?</span>
+                        <input class="input100" type="text" name="security" placeholder="Type your favourite colour">
+                        <span class="focus-input100" data-symbol="&#xf206;"></span>
+                    </div>
+
 					<div class="wrap-input100 validate-input m-b-23" data-validate = "Password is required">
 						<span class="label-input100">Set new password</span>
 						<input class="input100" type="password" name="password" placeholder="Type your password">
-						<span class="focus-input100" data-symbol="&#xf206;"></span>
+						<span class="focus-input100" data-symbol="&#xf190;"></span>
 					</div>
 
 					
@@ -86,6 +85,16 @@
 						</div>
 					</div>
 
+					<div class="flex-col-c p-t-50">
+
+						<a href="login.php" class="txt2">
+							Back to login?
+						</a>
+					</div>
+					</form>
+			</div>
+		</div>
+	</div>
 	
 
 
@@ -106,12 +115,10 @@
 	<script src="vendor/countdowntime/countdowntime.js"></script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
+	<!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+		crossorigin="anonymous"></script>
 
 </body>
 </html>
-
-<?php
-
-}
-
-?>

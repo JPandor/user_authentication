@@ -8,6 +8,7 @@ include ("connect.php");
 $email = $_POST['email'];
 $password = md5($_POST['password']);
 $user_type = $_POST['user-role'];
+$security = $_POST['security'];
 
 //getting user role
 if ($user_type == "librarian"){
@@ -17,8 +18,8 @@ if ($user_type == "librarian"){
 }
 
 //sql for adding user 
-$sql = "INSERT INTO users (email, password, librarian)
-VALUES ('$email', '$password', $user_type)";
+$sql = "INSERT INTO users (email, password, librarian, colour)
+VALUES ('$email', '$password', $user_type, '$security')";
 
 
 //adding user to database
