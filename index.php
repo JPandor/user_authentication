@@ -205,6 +205,8 @@ if ($_SESSION['user'] == true) {
     }
     echo "</table> </div>";
 
+}else {
+  header ("Location: login.php");
 }
 
   ?>

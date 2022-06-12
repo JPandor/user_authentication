@@ -66,7 +66,7 @@ $_SESSION['user'] = false;
 				  $_SESSION['new_user'] = false;
 				}else if ($_SESSION['add'] == true){
 					echo "<div class='alert alert-danger' role='alert'>
-					Only librarians can add books/authors. If you are a librarian, please login.
+					Only librarians can add/delete books/authors. If you are a librarian, please login.
 				  </div>";
 				  $_SESSION['add'] = false;
 				}else if ($_SESSION['change_password'] == true){

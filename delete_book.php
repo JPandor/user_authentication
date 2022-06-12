@@ -3,6 +3,14 @@
 session_start();
 include ("connect.php");
 
+//restricting access
+if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
+{
+	$_SESSION['add'] = true;
+    header("Location: login.php");
+    die();
+}
+
 
 if (isset ($_POST['book'])){
     $book = $_POST['book'];
