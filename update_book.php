@@ -12,7 +12,7 @@ if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
     die();
 }
 
-// adding book 
+// updating book
 if ($_POST['book_name']){
     
     $book = $_POST['book_name'];
@@ -32,27 +32,21 @@ if ($_POST['book_name']){
 		//storing author id in a variable 
 		$author_id = $author_result['author_id'];
 
-		//sql query for adding the book 
-        $sql = "INSERT INTO books (book_name, book_year, book_genre, age_group, authors_id)
-        VALUES ('$book', $years, '$genre', '$age', $author_id)";
+		//sql query for updating the book 
+        $sql = "UPDATE books SET book_name = '$book', book_year = $years, book_genre = '$genre', age_group = '$age', authors_id = $author_id WHERE book_name = '$book'";
 
 		//running sql query
 		if ($conn->query($sql) === TRUE) {
-			$_SESSION['add_book'] = true;
+			$_SESSION['update_book'] = true;
 			header("Location: index.php");
 		}else {
 			echo "<div class='alert alert-danger' role='alert'>
 				Error:" . $sql . "<br>" . $conn->error . 
 			"</div>";
 		}
-	//error for if author is not found 
-    }else if ($author_result->num_rows == 0){
-		$_SESSION['author_error'] = true;
-		header ("Location: add_author.php");
-	}else{
-		echo "<div class='alert alert-danger' role='alert'>
-                    Something went wrong :(
-				</div>";
+    }else{
+		$_SESSION['update_book_error'] = true;
+        header("Location: update_book.php");
 	}
 
 }else {
@@ -65,7 +59,7 @@ if ($_POST['book_name']){
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Book</title>
+    <title>Update Book</title>
     <!--===============================================================================================-->	
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
 <!--===============================================================================================-->
@@ -95,12 +89,19 @@ if ($_POST['book_name']){
 
     <div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
-			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<form class="login100-form validate-form" action="add_books.php" method="post">
+			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-35">
+				<form class="login100-form validate-form" action="update_book.php" method="post">
 					<span class="login100-form-title p-b-49">
-						Add Book
+						Update Book Details
 					</span>
-
+                <?php
+                    if ($_SESSION['update_book_error'] == true){
+                        echo "<div class='alert alert-danger mb-3' role='alert'>
+					    Something went wrong! Please make sure you put correct book/author names.
+				        </div>";
+				    $_SESSION['update_book_error'] = false;
+                    }
+                ?>
 					<div class="wrap-input100 validate-input m-b-23" data-validate="Book name is required">
 						<span class="label-input100">Book Name</span>
 						<input class="input100" type="text" name="book_name" placeholder="Type book name">
@@ -135,7 +136,7 @@ if ($_POST['book_name']){
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
 							<button class="login100-form-btn" type="submit">
-								Add Book
+								Update Book
 							</button>
 						</div>
 					</div>

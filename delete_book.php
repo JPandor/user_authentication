@@ -1,10 +1,9 @@
 <?php
 
 session_start();
-
 include ("connect.php");
 
-//restrict access for users that are members or not logged in
+//restricting access
 if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
 {
 	$_SESSION['add'] = true;
@@ -13,25 +12,30 @@ if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
 }
 
 
-//getting results and adding them to db 
-if ($_POST['author_name']){
+if (isset ($_POST['book'])){
+    $book = $_POST['book'];
 
-	$author = $_POST['author_name'];
-	$age = $_POST['author_age'];
-	$genre = $_POST['genre'];
+    $sql = "SELECT * FROM books WHERE book_name = '$book'";
 
-	$sql = "INSERT INTO authors (author_name, age, genre)
-	VALUES ('$author', $age, '$genre')";
+    $result = mysqli_query($conn, $sql);
 
-	if ($conn->query($sql) === TRUE) {
-		$_SESSION['add_author'] = true;
-		header("Location: index.php");
-	} else {
-		echo "<div class='alert alert-danger' role='alert'>
-				Error:" . $sql . "<br>" . $conn->error . 
-			"</div>";
-	}
-}else{
+    if ($result->num_rows > 0){
+        $delete_sql = "DELETE FROM books WHERE book_name = '$book'";
+
+		//error/success handling
+        if ($conn->query($delete_sql) === TRUE){
+            $_SESSION['delete_book'] = true;
+            header ("Location: index.php");
+        }else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    }else {
+        $_SESSION['delete_book_error'] = true;
+    }
+}
+
+
+    
 
 ?>
 
@@ -39,10 +43,9 @@ if ($_POST['author_name']){
 <html lang="en">
 
 <head>
+	<title>Login</title>
 	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Add Author</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
 	<!--===============================================================================================-->
@@ -65,65 +68,57 @@ if ($_POST['author_name']){
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<!--===============================================================================================-->
+	<!-- CSS only -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 
 <body>
 
+
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<form class="login100-form validate-form" action="add_author.php" method="post">
+				<form class="login100-form validate-form" action="delete_book.php" method="post">
 					<span class="login100-form-title p-b-49">
-						Add author
+						Delete Book
 					</span>
-					<?php
-					//error handling 
-					if ($_SESSION['author_error'] == true){
-    					echo "<div class='alert alert-danger mb-3' role='alert'>
-						Book not added. Please add the author first and try again.
-				 		</div>";
-				  		$_SESSION['author_error'] = false;
-  					}
-  			?>
 
-					<div class="wrap-input100 validate-input m-b-23" data-validate="Author name is required">
-						<span class="label-input100">Author Name</span>
-						<input class="input100" type="text" name="author_name" placeholder="Type author name">
+                    <?php
+                    if ($_SESSION['delete_book_error'] == true){
+                        echo "<div class='alert alert-danger' role='alert'>
+                        Book was not found
+                        </div>";
+                        $_SESSION['delete_book_error'] = false;
+                    }else if ($_SESSION['delete_author_error'] == true){
+                        echo "<div class='alert alert-danger' role='alert'>
+                        Please delete all books of author before trying to delete the author.
+                        </div>";
+                        $_SESSION['delete_error'] = false;
+                    }
+                    ?>
+					<div class="wrap-input100 validate-input m-b-23" data-validate="Book name is required">
+						<span class="label-input100">Book Name</span>
+						<input class="input100" type="text" name="book" placeholder="Type book to delete">
 						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 
-					<div class="wrap-input100 validate-input" data-validate="Author age is required">
-						<span class="label-input100">Age</span>
-						<input class="input100" type="text" name="author_age" placeholder="Type author age">
-						<span class="focus-input100" data-symbol="&#xf206;"></span>
-					</div>
-					<div class="m-b-23 p-t-7">
-						<span class="txt1">
-							Please type null if author has passed
-						</span>
-					</div>
-
-					<div class="wrap-input100 validate-input m-b-23" data-validate="Genre is required">
-						<span class="label-input100">Genre</span>
-						<input class="input100" type="text" name="genre" placeholder="Type author genre">
-						<span class="focus-input100" data-symbol="&#xf206;"></span>
-					</div>
-
-					<div class="container-login100-form-btn">
+                    <div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
 							<button class="login100-form-btn" type="submit">
-								Add Author
+								Delete Book
 							</button>
 						</div>
 					</div>
 
-					<div class="flex-col-c p-t-30">
+                    <div class="flex-col-c p-t-30">
 
 						<a href="index.php" class="txt2">
 							Back to home?
 						</a>
 					</div>
+
 				</form>
 			</div>
 		</div>
@@ -148,15 +143,11 @@ if ($_POST['author_name']){
 	<script src="vendor/countdowntime/countdowntime.js"></script>
 	<!--===============================================================================================-->
 	<script src="js/main.js"></script>
-
-
+	<!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+		crossorigin="anonymous"></script>
 
 </body>
 
 </html>
-
-<?php
-
-}
-
-?>

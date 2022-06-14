@@ -5,18 +5,36 @@ session_start();
 
 include ("connect.php");
 
+if ($_POST['emails']){
+  //getting login inputs
+  $email = $_POST['emails'];
+  $password = md5($_POST['passwords']);
+  //sql query for user 
+  $user_sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+  $_SESSION['email'] = $email;
+  //running user sql query
+  $result = mysqli_query($conn, $user_sql);
+  $users = mysqli_fetch_assoc($result);
 
-//getting login inputs
-$email = $_POST['emails'];
-$password = md5($_POST['passwords']);
+  //checking if user details are right
+  if ($result->num_rows > 0){
+    $_SESSION['user'] = true;
+  }else {
+    
+    $_SESSION['user'] = false;
+    $_SESSION['login_error'] = true;
+    header ("Location: login.php");
+  }
 
+  //seperating user types
+  if ($users['librarian']  == 1){
+    $_SESSION['user_admin'] = true;
+  }else {
+    $_SESSION['user_admin'] = false;
+  }
 
-//sql query for user 
-$user_sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+}
 
-
-//running user sql query
-$result = mysqli_query($conn, $user_sql);
 
 //sql query for books table 
 $books_sql = "";
@@ -41,23 +59,11 @@ if ($sort == "relevance"){
 //running book sql query 
 $books_result =  mysqli_query($conn, $books_sql);
 
-$_SESSION['login_error'] = false;
 
-if ($result->num_rows > 0  || $_SESSION['user'] == true) {
+if ($_SESSION['user'] == true) {
   
-  $rows = mysqli_fetch_assoc($result);
-  $_SESSION['user'] = true;
+  
   $_SESSION['login_error'] = false;
-  //seperating user types
-  if (!$_GET){
-    if ($rows['librarian']  == 1){
-      // echo "You are a librarian";
-      $_SESSION['user_type'] = "admin";
-    }else {
-      // echo "You are a member";
-      $_SESSION['user_type'] = "member";
-    }
-  }
 
 
 ?>
@@ -73,7 +79,7 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-  <!-- <link href="css/index.css" rel="stylehseet" type="text/css"> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
   <title>Library</title>
   <style>
     body {
@@ -84,27 +90,46 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
 
     aside {
       background-color: white;
+      margin-right: 1%;
+    }
 
+    h1 {
+      font-size: 70px !important;
     }
   </style>
 </head>
 
 <body class='mx-5'>
 
-  <h1 class='jumbotron text-center m-5 fs-1'>Library</h1>
+  <h1 class='jumbotron text-center m-5'>Library</h1>
+  <!-- navbar -->
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
 
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page">Library</a>
-
+          <a class="nav-link active" aria-current="page" href="index.php">Home</a>
           <?php
-          if ($_SESSION['user_type'] == "admin"){ ?>
-              <a class="nav-link" href="add_books.php">Add Book</a>
-              <a class="nav-link" href="add_author.php">Add Author</a>
-          <?php } ?>
+            if ($_SESSION['user_admin'] == true){ ?>
+          <a class="nav-link link-dark" href="add_books.php">Add Book</a>
+          <a class="nav-link link-dark" href="add_author.php">Add Author</a>
+          <a class="nav-link link-dark" href="delete_book.php">Delete Book</a>
+          <a class="nav-link link-dark" href="delete_auth.php">Delete Author</a>
+          <a class="nav-link link-dark" href="update_book.php">Update Book</a>
+          <?php
+            }
+          ?>
         </div>
+      </div>
+      <div class="nav-item dropdown  mx-4">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="login.php">Logout</a></li>
+          <li><a class="dropdown-item" href="delete.php">Delete Account</a></li>
+        </ul>
       </div>
       <form class="d-flex" role="search" action="search.php" method="post">
         <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">
@@ -115,20 +140,38 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
   <br>
 
   <?php
+  //error/success handling
   if ($_SESSION['add_author'] == true){
     echo "<div class='alert alert-success' role='alert'>
-					New author succesfully added!
+					New author successfully added!
 				  </div>";
 				  $_SESSION['add_author'] = false;
   }else if ($_SESSION['add_book'] == true){
     echo "<div class='alert alert-success' role='alert'>
-					New book succesfully added!
+					New book successfully added!
 				  </div>";
 				  $_SESSION['add_book'] = false;
+  }else if ($_SESSION['delete_auth'] == true){
+    echo "<div class='alert alert-success' role='alert'>
+					Author successfully deleted.
+				  </div>";
+				  $_SESSION['delete_auth'] = false;
+  }else if ($_SESSION['delete_book'] == true){
+    echo "<div class='alert alert-success' role='alert'>
+					Book successfully deleted.
+				  </div>";
+				  $_SESSION['delete_book'] = false;
+  }else if ($_SESSION['update_book'] == true){
+    echo "<div class='alert alert-success' role='alert'>
+					Book successfully updated.
+				  </div>";
+				  $_SESSION['update_book'] = false;
   }
   ?>
+
+  <!-- filter form -->
   <main style="display: flex;">
-    <aside style="width: 17%;" class="mb-4 p-3">
+    <aside style="width: 16%;" class="mb-4 p-3">
       <form action="index.php" method="get">
         <h2>Sort By</h2>
         <input type="radio" name="sort" id="relevance" value="relevance">
@@ -151,7 +194,7 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
     <?php
 
 
-  
+    //displaying all the books
     echo "<div style='width: 83%;'><table class='table table-light mb-4'><tr>
     <th>Author</th>
     <th>Book Name</th>
@@ -160,20 +203,17 @@ if ($result->num_rows > 0  || $_SESSION['user'] == true) {
     <th>Recommended Age</th>
     </tr>";
     while($row = mysqli_fetch_array($books_result)){
-        echo "<tr><td>" . $row['author_name'] . "</td>
-        <td>" . $row['book_name'] . "</td>
+        echo "<tr><td>" . ucwords($row['author_name']) . "</td>
+        <td>" . ucwords($row['book_name']) . "</td>
         <td>" . $row['book_year'] . "</td>
-        <td>" . $row['book_genre'] . "</td>
+        <td>" . ucwords($row['book_genre']) . "</td>
         <td>" . $row['age_group'] . "</td></tr>";
     }
     echo "</table> </div>";
 
-  } else {
-    // echo "Your username or password is incorrect!";
-    $_SESSION['user'] = false;
-    $_SESSION['login_error'] = true;
-    header ("Location: login.php");
-  }
+}else {
+  header ("Location: login.php");
+}
 
   ?>
   </main>
