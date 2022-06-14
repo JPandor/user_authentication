@@ -1,3 +1,34 @@
+<?php
+
+session_start();
+
+include ("connect.php");
+
+if (isset ($_POST['passwords'])){
+    $password = md5($_POST['passwords']);
+    $email = $_SESSION['email'];
+    $user_sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+
+    $result = mysqli_query($conn, $user_sql);
+
+    if (mysqli_num_rows($result) > 0){
+		//delete sql 
+		$sql = "DELETE FROM users WHERE email = '$email'";
+
+		if (mysqli_query($conn, $sql) == true){
+			$_SESSION['delete_acc'] = true;
+			header ("Location: sign_up.php");
+		}else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+	}else{
+		$_SESSION['delete_error'] = true;
+		header ("Location: delete.php");
+	}
+}else{
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,16 +75,16 @@
 <div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<form class="login100-form validate-form" action="delete_acc.php" method="post">
+				<form class="login100-form validate-form" action="delete.php" method="post">
 					<span class="login100-form-title p-b-49">
 						Delete Account
 					</span>
 			<?php
 					if ($_SESSION['delete_error'] == true){
-					echo "<div class='alert alert-danger' role='alert'>
-					Password is incorrect.
-				  </div>";
-				  $_SESSION['delete_error'] = false;
+						echo "<div class='alert alert-danger' role='alert'>
+						Password is incorrect.
+				  		</div>";
+				  		$_SESSION['delete_error'] = false;
 					}
 			?>
 
@@ -104,3 +135,7 @@
 
 </body>
 </html>
+
+<?php
+}
+?>

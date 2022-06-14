@@ -115,6 +115,7 @@ if ($_SESSION['user'] == true) {
           <a class="nav-link link-dark" href="add_author.php">Add Author</a>
           <a class="nav-link link-dark" href="delete_book.php">Delete Book</a>
           <a class="nav-link link-dark" href="delete_auth.php">Delete Author</a>
+          <a class="nav-link link-dark" href="update_book.php">Update Book</a>
           <?php
             }
           ?>
@@ -160,6 +161,11 @@ if ($_SESSION['user'] == true) {
 					Book successfully deleted.
 				  </div>";
 				  $_SESSION['delete_book'] = false;
+  }else if ($_SESSION['update_book'] == true){
+    echo "<div class='alert alert-success' role='alert'>
+					Book successfully updated.
+				  </div>";
+				  $_SESSION['update_book'] = false;
   }
   ?>
 

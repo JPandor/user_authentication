@@ -1,3 +1,38 @@
+<?php
+    session_start();
+
+    include ("connect.php");
+
+    if (isset ($_POST['email'])){
+        //getting user input 
+        $email = $_POST['email'];
+        $password = md5($_POST['password']);
+        $user_type = $_POST['user-role'];
+        $security = $_POST['security'];
+
+        //getting user role
+        if ($user_type == "librarian"){
+            $user_type = true;
+        }else {
+            $user_type = 0;
+        }
+
+        //sql for adding user 
+        $sql = "INSERT INTO users (email, password, librarian, colour)
+        VALUES ('$email', '$password', $user_type, '$security')";
+
+
+        //adding user to database
+        if ($conn->query($sql) === TRUE) {
+            $_SESSION['new_user'] = true;
+            header("Location: login.php");
+        
+          } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    }else {
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,11 +69,18 @@
     <div class="limiter">
         <div class="container-login100" style="background-image: url('images/bg-01.jpg');">
             <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-                <form class="login100-form validate-form" action="register.php" method="post">
+                <form class="login100-form validate-form" action="sign_up.php" method="post">
                     <span class="login100-form-title p-b-49">
                         Sign Up
                     </span>
-
+                    <?php
+                        if ($_SESSION['delete_acc'] == true){
+                            echo "<div class='alert alert-danger' role='alert'>
+                            Your account has been deleted. Goodbye :(
+                            </div>";
+                            $_SESSION['delete_acc'] = false;
+                        }
+                    ?>
                     <div class="wrap-input100 validate-input m-b-23" data-validate="Email is required">
                         <span class="label-input100">Email</span>
                         <input class="input100" type="text" name="email" placeholder="Type your email">
@@ -112,3 +154,9 @@
 </body>
 
 </html>
+
+<?php
+
+}
+
+?>

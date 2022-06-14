@@ -101,7 +101,6 @@ if ($_POST['author_name']){
 						<span class="txt1">
 							Please type null if author has passed
 						</span>
-
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-23" data-validate="Genre is required">
