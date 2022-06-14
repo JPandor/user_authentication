@@ -35,23 +35,24 @@ if ($_POST['book_name']){
 		//sql query for adding the book 
         $sql = "INSERT INTO books (book_name, book_year, book_genre, age_group, authors_id)
         VALUES ('$book', $years, '$genre', '$age', $author_id)";
+
+		//running sql query
 		if ($conn->query($sql) === TRUE) {
-			// echo "New record created successfully";
-			// echo "<a href='add_books.php'>Add more books?</a>";
 			$_SESSION['add_book'] = true;
 			header("Location: index.php");
-		} else {
-			echo "Error: " . $sql . "<br>" . $conn->error;
+		}else {
+			echo "<div class='alert alert-danger' role='alert'>
+				Error:" . $sql . "<br>" . $conn->error . 
+			"</div>";
 		}
-	  
+	//error for if author is not found 
     }else if ($author_result->num_rows == 0){
-	// 	echo "<div class='alert alert-danger' role='alert'>
-	// 	Author not found!
-	//    </div>";
 		$_SESSION['author_error'] = true;
 		header ("Location: add_author.php");
 	}else{
-		echo "Something went wrong :(";
+		echo "<div class='alert alert-danger' role='alert'>
+                    Something went wrong :(
+				</div>";
 	}
 
 }else {

@@ -22,6 +22,7 @@ if (isset ($_POST['book'])){
     if ($result->num_rows > 0){
         $delete_sql = "DELETE FROM books WHERE book_name = '$book'";
 
+		//error/success handling
         if ($conn->query($delete_sql) === TRUE){
             $_SESSION['delete_book'] = true;
             header ("Location: index.php");

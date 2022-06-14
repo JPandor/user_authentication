@@ -15,6 +15,7 @@ if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
 if (isset ($_POST['author'])){
     $author = $_POST['author'];
 
+    // getting author to be deleted 
     $sql = "SELECT * FROM authors WHERE author_name = '$author'";
 
     $result = mysqli_query($conn, $sql);
@@ -22,6 +23,7 @@ if (isset ($_POST['author'])){
     if ($result->num_rows > 0){
         $delete_sql = "DELETE FROM authors WHERE author_name = '$author'";
 
+        //error/success handling
         if ($conn->query($delete_sql) === TRUE){
             $_SESSION['delete_auth'] = true;
             header ("Location: index.php");
@@ -84,6 +86,7 @@ if (isset ($_POST['author'])){
                     </span>
 
                     <?php
+                    //error handling
                     if ($_SESSION['delete_auth_error'] == true){
                         echo "<div class='alert alert-danger' role='alert'>
                         Author was not found.

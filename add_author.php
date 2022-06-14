@@ -4,7 +4,7 @@ session_start();
 
 include ("connect.php");
 
-//restrict access
+//restrict access for users that are members or not logged in
 if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
 {
 	$_SESSION['add'] = true;
@@ -13,7 +13,7 @@ if ($_SESSION['user'] == false || $_SESSION['user_admin'] == false)
 }
 
 
-//getting results and adding them to db
+//getting results and adding them to db 
 if ($_POST['author_name']){
 
 	$author = $_POST['author_name'];
@@ -27,7 +27,9 @@ if ($_POST['author_name']){
 		$_SESSION['add_author'] = true;
 		header("Location: index.php");
 	} else {
-		echo "Error: " . $sql . "<br>" . $conn->error;
+		echo "<div class='alert alert-danger' role='alert'>
+				Error:" . $sql . "<br>" . $conn->error . 
+			"</div>";
 	}
 }else{
 
@@ -75,6 +77,7 @@ if ($_POST['author_name']){
 						Add author
 					</span>
 					<?php
+					//error handling 
 					if ($_SESSION['author_error'] == true){
     					echo "<div class='alert alert-danger mb-3' role='alert'>
 						Book not added. Please add the author first and try again.
@@ -89,10 +92,16 @@ if ($_POST['author_name']){
 						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 
-					<div class="wrap-input100 validate-input m-b-23" data-validate="Author age is required">
+					<div class="wrap-input100 validate-input" data-validate="Author age is required">
 						<span class="label-input100">Age</span>
-						<input class="input100" type="number" name="author_age" placeholder="Type author age">
+						<input class="input100" type="text" name="author_age" placeholder="Type author age">
 						<span class="focus-input100" data-symbol="&#xf206;"></span>
+					</div>
+					<div class="m-b-23 p-t-7">
+						<span class="txt1">
+							Please type null if author has passed
+						</span>
+
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-23" data-validate="Genre is required">
